@@ -9,25 +9,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float runSpeedMultiplier = 1.5f;
     [SerializeField] private bool enableRunning = true;
 
-    private readonly int moveX = Animator.StringToHash("MoveX");
-    private readonly int moveY = Animator.StringToHash("MoveY");
-    private readonly int moving = Animator.StringToHash("Moving");
-    private readonly int running = Animator.StringToHash("Running");
-
+    private PlayerAnimations playerAnimations;
     private PlayerActions actions;
+    private Player player;
     private Rigidbody2D rb2D;
-    private Animator animator;
     private Vector2 moveDirection;
-    private bool isRunning = false;
     private float currentSpeed;
+
 
     private void Awake()
     {
+        player = GetComponent<Player>();
         actions = new PlayerActions();
-        animator = GetComponent<Animator>();
         rb2D = GetComponent<Rigidbody2D>();
+        playerAnimations = GetComponent<PlayerAnimations>();
         currentSpeed = speed;
-
     }
 
     // Start is called before the first frame update
@@ -47,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
+        if (player.Stats.Health <= 0) return; //if player is stead stop movement
         rb2D.MovePosition(rb2D.position + moveDirection * (currentSpeed * Time.fixedDeltaTime));
     }
 
@@ -56,16 +53,12 @@ public class PlayerMovement : MonoBehaviour
         moveDirection = actions.Movement.Move.ReadValue<Vector2>().normalized;
         if (moveDirection == Vector2.zero)
         {
-            animator.SetBool(moving, false);
-            animator.SetBool(running, false);
+            playerAnimations.SetMovingAnimation(false);
             return;//not moving = no updates
         }
         // Update parameters
-        animator.SetBool(moving, true);
-        animator.SetFloat(moveX, moveDirection.x);
-        animator.SetFloat(moveY, moveDirection.y);
-
-        animator.SetBool(running, isRunning && moveDirection != Vector2.zero);
+        playerAnimations.SetMovingAnimation(true);
+        playerAnimations.SetMoveAnimation(moveDirection);
     }
 
     private void HandleRunning()
@@ -78,12 +71,10 @@ public class PlayerMovement : MonoBehaviour
         // 只有在移动时才能奔跑
         if (runInput && moveDirection != Vector2.zero)
         {
-            isRunning = true;
             currentSpeed = speed * runSpeedMultiplier;
         }
         else
         {
-            isRunning = false;
             currentSpeed = speed;
         }
     }
