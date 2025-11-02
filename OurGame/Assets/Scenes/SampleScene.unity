@@ -1016,6 +1016,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: b122f3fba03c625409d014b33e68ebee, type: 2}
+  spriteRenderer: {fileID: 0}
+  hurtColor: {r: 1, g: 0, b: 0, a: 1}
+  hurtFlashTime: 0.2
 --- !u!114 &805636833
 MonoBehaviour:
   m_ObjectHideFlags: 0
