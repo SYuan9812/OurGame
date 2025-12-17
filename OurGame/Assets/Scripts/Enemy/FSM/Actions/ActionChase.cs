@@ -30,7 +30,7 @@ public class ActionChase : FSMAction
         if(enemyBrain == null) return;
         chaseDirection = (enemyBrain.Player.position - transform.position).normalized;
         Vector3 dirToPlayer = enemyBrain.Player.position - transform.position;
-        if(dirToPlayer.magnitude >= 1.3f)
+        if(dirToPlayer.magnitude >= 0.1f)
         {
             transform.Translate(dirToPlayer.normalized * (chaseSpeed * Time.deltaTime));
             animator.SetFloat("EnemyX", chaseDirection.x);

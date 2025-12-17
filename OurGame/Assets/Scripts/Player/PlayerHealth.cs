@@ -14,7 +14,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private Color originalColor; 
     private PlayerAnimations playerAnimations;
-    private bool isDead = false;  
+    public bool isDead = false;  
 
     
     public System.Action<float> OnHealthChanged;
@@ -31,16 +31,17 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            TakeDamage(1f);
+        if (stats.Health <= 0f)
+        { 
+            PlayerDead();
         }
     }
 
     public void TakeDamage(float amount)
     {
         if (isDead) return;  // 
-
+        if (stats.Health <= 0f) return;
+        DamageManager.Instance.ShowDamageText(amount, transform);
         stats.Health -= amount;
         stats.Health = Mathf.Max(stats.Health, 0f);
 
@@ -49,6 +50,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         if (stats.Health <= 0f)
         {
+            stats.Health = 0f;
             PlayerDead();
         }
     }
