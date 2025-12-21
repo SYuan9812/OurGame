@@ -31,10 +31,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        if (stats.Health <= 0f)
-        { 
-            PlayerDead();
-        }
+        
     }
 
     public void TakeDamage(float amount)
@@ -65,14 +62,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void PlayerDead()
     {
+        if (isDead) return;
         isDead = true;  //
         playerAnimations.SetDeadAnimation();
         OnPlayerDead?.Invoke();
-
-        // 
-        
-
-        Debug.Log("You Are Dead£¡");
     }
 
     //
