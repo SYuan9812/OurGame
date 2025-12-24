@@ -18641,6 +18641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03005e0cbddb45548b029fde57affe4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ATK: 10
   animBrick: {fileID: 130888910}
   animSlash: {fileID: 257623168}
   BrickAttackRange: {fileID: 2706295446566435501, guid: 8b04980bd330a2a4bb3259131226ea34, type: 3}
@@ -19352,6 +19353,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dc260f3b935b3e4e9c5d80d7c9fd643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 957934226}
+  knockbackForce: 5
+  knockbackDuration: 0.2
+  maxHealth: 50
+  currentHealth: 0
+  damageTextPrefab: {fileID: 1413098691205116768, guid: 71d9a1e9131965d4284cefd24d4bf35e, type: 3}
+  damageTextSpawnPoint: {fileID: 957934195}
+--- !u!95 &957934226 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4703698568951022568, guid: cb0963ff2bd047d42a4088cad2436d48, type: 3}
+  m_PrefabInstance: {fileID: 6444428612888011066}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &974522719 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8100448628028782381, guid: 7a0a3634a1451834d8106a34d1002e47, type: 3}
@@ -21244,6 +21257,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dc260f3b935b3e4e9c5d80d7c9fd643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 1502233417}
+  knockbackForce: 5
+  knockbackDuration: 0.2
+  maxHealth: 50
+  currentHealth: 0
+  damageTextPrefab: {fileID: 1413098691205116768, guid: 71d9a1e9131965d4284cefd24d4bf35e, type: 3}
+  damageTextSpawnPoint: {fileID: 1502233399}
+--- !u!95 &1502233417 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8556302350549091953, guid: 9e0e43d223c37c243b7fe0034f206fcf, type: 3}
+  m_PrefabInstance: {fileID: 1098832753963917529}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1503066608
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36466,7 +36491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6611232092510475669, guid: 9e0e43d223c37c243b7fe0034f206fcf, type: 3}
       propertyPath: m_Name
-      value: enemy_shadow (1)
+      value: enemy_shadow_wander
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -36620,7 +36645,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 6844085311647888552, guid: cb0963ff2bd047d42a4088cad2436d48, type: 3}
       propertyPath: m_Name
-      value: enemy_shadow
+      value: enemy_shadow_patrol
       objectReference: {fileID: 0}
     - target: {fileID: 8457516006260984351, guid: cb0963ff2bd047d42a4088cad2436d48, type: 3}
       propertyPath: m_LocalPosition.x
