@@ -6,6 +6,10 @@ public class EnemyBrain : MonoBehaviour
     [SerializeField] private string initState;
     [SerializeField] private FSMState[] states;
 
+    [Header("Core Settings")]
+    [SerializeField] private Transform player;
+    [SerializeField] private string playerTag = "Player";
+
     public FSMState CurrentState { get; set; }
     public Transform Player { get; set; }
     public EnemyDirection CurrentDirection;
@@ -14,7 +18,7 @@ public class EnemyBrain : MonoBehaviour
     {
         if (Player == null)
         {
-            GameObject playerObj = GameObject.FindWithTag("Player");
+            GameObject playerObj = GameObject.FindWithTag(playerTag);
             if (playerObj != null)
             {
                 Player = playerObj.transform; // ¸³ÖµTransform
@@ -26,6 +30,8 @@ public class EnemyBrain : MonoBehaviour
         }
         ChangeState(initState);
     }
+
+
 
     private void Update()
     {

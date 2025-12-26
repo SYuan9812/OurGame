@@ -27,6 +27,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (spriteRenderer == null)
             spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
+
+        if (stats != null)
+        {
+            stats.Health = stats.MaxHealth;
+            OnHealthChanged?.Invoke(stats.Health); // Update UI on start
+        }
     }
 
     private void Update()

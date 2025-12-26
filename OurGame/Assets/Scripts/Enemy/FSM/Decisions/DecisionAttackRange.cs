@@ -1,5 +1,4 @@
 //Attack state
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,31 +20,34 @@ public class DecisionAttackRange : FSMDecision
 
     private void Awake()
     {
-        enemy = GetComponent<EnemyBrain>();
-
-        // 检测核心组件
+        // 优先从父物体查找EnemyBrain（兼容组件挂载层级）
+        enemy = GetComponentInParent<EnemyBrain>();
         if (enemy == null)
-            Debug.LogError($"【攻击判定】{gameObject.name} 缺失 EnemyBrain 组件！", this);
+        {
+            enemy = GetComponent<EnemyBrain>();
+            Debug.LogError($"【攻击判定】{gameObject.name} 自身/父物体缺失 EnemyBrain 组件！", this);
+            return; // 终止初始化，避免后续报错
+        }
 
         // 检测子物体是否未赋值
         CheckUnassignedColliderObjs();
     }
 
-    // 删除错误的Update方法！朝向更新不在判定脚本中处理
-
     public override bool Decide()
     {
+        // 空值防护：EnemyBrain为空直接返回false
+        if (enemy == null) return false;
 
         UpdateCurrentColliderByDirection();
         bool isInRange = PlayerInAttackRange();
-
-        // 仅在判定为True时打印（避免刷屏）
-
         return isInRange;
     }
 
     private void UpdateCurrentColliderByDirection()
     {
+        // 空值防护：EnemyBrain为空直接返回
+        if (enemy == null) return;
+
         // 核心修改：直接从EnemyBrain获取朝向，无需Animator
         EnemyDirection currentDir = enemy.CurrentDirection;
 
@@ -75,17 +77,23 @@ public class DecisionAttackRange : FSMDecision
 
     private bool PlayerInAttackRange()
     {
-        // 全链路空值校验（保留）
+        // 全链路空值校验（核心修复）
         if (currentAttackCollider == null)
         {
-            Debug.LogWarning($"【攻击判定】当前朝向{enemy.CurrentDirection}的碰撞箱为空！", this);
+            Debug.LogWarning($"【攻击判定】当前朝向{enemy?.CurrentDirection}的碰撞箱为空！", this);
+            return false;
+        }
+
+        // 空值防护：EnemyBrain.Player为空
+        if (enemy == null || enemy.Player == null)
+        {
             return false;
         }
 
         Collider2D playerCollider = enemy.Player.GetComponent<Collider2D>();
         if (playerCollider == null)
         {
-            Debug.LogError($"【攻击判定】玩家无Collider2D组件！", this);
+            Debug.LogError($"【攻击判定】玩家{enemy.Player.name}无Collider2D组件！", this);
             return false;
         }
 
@@ -98,6 +106,9 @@ public class DecisionAttackRange : FSMDecision
         currentAttackCollider.OverlapCollider(filter, hitColliders);
         foreach (var coll in hitColliders)
         {
+            // 空值防护：coll.transform为空
+            if (coll == null || coll.transform == null) continue;
+
             if (coll.transform == enemy.Player)
             {
                 return true;

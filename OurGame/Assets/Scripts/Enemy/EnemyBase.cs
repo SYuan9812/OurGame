@@ -21,6 +21,7 @@ public class EnemyBase : MonoBehaviour
     private Rigidbody2D rb;
     private bool isKnockedBack = false;
     private bool isDead = false;
+    private EnemyLoot enemyLoot;
 
     void Start()
     {
@@ -28,6 +29,8 @@ public class EnemyBase : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
 
         currentHealth = maxHealth;
+
+        enemyLoot = GetComponent<EnemyLoot>();
     }
 
 
@@ -92,6 +95,8 @@ public class EnemyBase : MonoBehaviour
             col.enabled = false;
         }
 
+        DropExp();
+
         // Destroy enemy after death animation
         Destroy(gameObject, 0.417f);
     }
@@ -116,6 +121,28 @@ public class EnemyBase : MonoBehaviour
         // Reset velocity and knockback state
         rb.velocity = startVelocity;
         isKnockedBack = false;
+    }
+
+
+    private void DropExp()
+    {
+        // Return if EnemyLoot component is missing
+        if (enemyLoot == null) return;
+
+        // Find player's PlayerExperience component
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            Debug.LogError("Player object with 'Player' tag not found!");
+            return;
+        }
+
+        PlayerExperience playerExp = player.GetComponent<PlayerExperience>();
+        if (playerExp != null)
+        {
+            // Add exp to player
+            playerExp.AddExp(enemyLoot.ExpDrop);
+        }
     }
 
     public void GetHitAnimEnd()

@@ -6,12 +6,26 @@ public class PlayerExperience : MonoBehaviour
 {
     [Header("Config")]
     [SerializeField] private PlayerStats stats;
+    [SerializeField] private PlayerHealth playerHealth;
+
+    [Header("Level Up Rewards")]
+    [SerializeField] private float healthIncreasePerLevel = 2f;
+    [SerializeField] private float staminaIncreasePerLevel = 20f;
+
+    private void Awake()
+    {
+        // Auto-find PlayerHealth component if not assigned
+        if (playerHealth == null)
+        {
+            playerHealth = GetComponent<PlayerHealth>();
+        }
+    }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.X))
         {
-            AddExp(300f);
+            AddExp(50f);
         }
     }
 
@@ -30,6 +44,16 @@ public class PlayerExperience : MonoBehaviour
     private void NextLevel()
     {
         stats.Level++;
+        stats.MaxHealth += healthIncreasePerLevel; //Update new max health
+
+        if (playerHealth != null) //Healing player after leveling up
+        {
+            float healAmount = stats.MaxHealth - stats.Health; // Calculate exact heal needed
+            playerHealth.Heal(healAmount);
+        }
+
+        stats.MaxStamina += staminaIncreasePerLevel;
+
         float CurrentExpRequired = stats.NextLevelExp;
         float NewNextLevelExp = Mathf.Round(CurrentExpRequired + stats.NextLevelExp 
             * (stats.ExpMultiplier / 100f));
