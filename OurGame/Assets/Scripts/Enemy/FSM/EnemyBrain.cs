@@ -1,9 +1,8 @@
-
 using UnityEngine;
 
 public class EnemyBrain : MonoBehaviour
 {
-    [SerializeField] private string initState;
+    [SerializeField] public string initState;
     [SerializeField] private FSMState[] states;
 
     [Header("Core Settings")]
@@ -14,6 +13,8 @@ public class EnemyBrain : MonoBehaviour
     public Transform Player { get; set; }
     public EnemyDirection CurrentDirection;
 
+    public bool forceStateLock = false; // Lock to prevent state changes
+
     private void Start()
     {
         if (Player == null)
@@ -21,28 +22,30 @@ public class EnemyBrain : MonoBehaviour
             GameObject playerObj = GameObject.FindWithTag(playerTag);
             if (playerObj != null)
             {
-                Player = playerObj.transform; // 赋值Transform
+                Player = playerObj.transform;
             }
             else
             {
-                Debug.LogError($"【EnemyBrain】{gameObject.name} 未找到玩家！请检查玩家Tag是否为Player", this);
+                Debug.LogError($"【EnemyBrain】{gameObject.name} Player not found! Check player tag is set to 'Player'", this);
             }
         }
         ChangeState(initState);
     }
 
-
-
     private void Update()
     {
+        if (forceStateLock)
+        {
+            CurrentState?.UpdateState(enemyBrain: this);
+            return; // Skip state change logic when locked
+        }
+
         CurrentState?.UpdateState(enemyBrain: this);
 
-        // 新增：每帧朝向玩家，更新CurrentDirection
+        // Update facing direction towards player
         if (Player != null)
         {
-            // 计算敌人到玩家的方向
             Vector2 dirToPlayer = (Player.position - transform.position).normalized;
-            // 优先上下，再左右（避免斜向移动时朝向混乱）
             if (Mathf.Abs(dirToPlayer.y) > Mathf.Abs(dirToPlayer.x))
             {
                 CurrentDirection = dirToPlayer.y > 0 ? EnemyDirection.Up : EnemyDirection.Down;
@@ -54,8 +57,11 @@ public class EnemyBrain : MonoBehaviour
         }
     }
 
-    public void ChangeState(string newStateID)
+    public void ChangeState(string newStateID, bool force = false)
     {
+        // If state is locked and not forced, do nothing
+        if (forceStateLock && !force) return;
+
         FSMState newState = GetState(newStateID);
         if (newState == null) return;
         CurrentState = newState;
@@ -70,7 +76,6 @@ public class EnemyBrain : MonoBehaviour
                 return states[i];
             }
         }
-
         return null;
     }
 
@@ -84,7 +89,5 @@ public class EnemyBrain : MonoBehaviour
             CurrentDirection = EnemyDirection.Left;
         else if (moveDir.x > 0)
             CurrentDirection = EnemyDirection.Right;
-
-        // 原有动画切换逻辑（比如SetBool/SetTrigger）保留不变
     }
 }

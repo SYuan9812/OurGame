@@ -7,10 +7,16 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Config")]
     [SerializeField] private PlayerStats stats;
 
+
     [Header("damage effect")]  
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Color hurtColor = Color.red;
     [SerializeField] private float hurtFlashTime = 0.2f;
+
+
+    [Header("heal effect")]
+    [SerializeField] private Color healColor = Color.green;
+    [SerializeField] private float healFlashTime = 0.2f;
 
     private Color originalColor; 
     private PlayerAnimations playerAnimations;
@@ -19,6 +25,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     
     public System.Action<float> OnHealthChanged;
     public System.Action OnPlayerDead;
+
+    private bool isInitialized = false;
 
     private void Awake()
     {
@@ -33,6 +41,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             stats.Health = stats.MaxHealth;
             OnHealthChanged?.Invoke(stats.Health); // Update UI on start
         }
+
+        isInitialized = true;
     }
 
     private void Update()
@@ -77,10 +87,19 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     //
     public void Heal(float healAmount)
     {
-        if (isDead) return;
+        if (isDead || !isInitialized) return;
 
         stats.Health += healAmount;
         stats.Health = Mathf.Min(stats.Health, stats.MaxHealth);
         OnHealthChanged?.Invoke(stats.Health);
+
+        StartCoroutine(HealFlash()); // Flash green when healing
+    }
+
+    private IEnumerator HealFlash()
+    {
+        spriteRenderer.color = healColor;
+        yield return new WaitForSeconds(healFlashTime);
+        spriteRenderer.color = originalColor;
     }
 }
