@@ -43,7 +43,7 @@ public class PlayerStats : ScriptableObject
         isStaminaLocked = false;
     }
 
-    public void ResetPlayer()
+    public void ResetPlayer(bool resetLevel = false)
     {
         // Reset health
         MaxHealth = baseMaxHealth;
@@ -55,8 +55,11 @@ public class PlayerStats : ScriptableObject
         isStaminaLocked = false;
 
         // Reset exp and level
-        Level = 1;
-        CurrentExp = 0f;
-        NextLevelExp = InitialNextLevelExp;
+        if (resetLevel)
+        {
+            Level = 1;
+            CurrentExp = 0f;
+            NextLevelExp = InitialNextLevelExp;
+        }
     }
 }

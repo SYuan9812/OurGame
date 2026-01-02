@@ -53,6 +53,7 @@ public class PlayerExperience : MonoBehaviour
         }
 
         stats.MaxStamina += staminaIncreasePerLevel;
+        stats.CurrentStamina = stats.MaxStamina;
 
         float CurrentExpRequired = stats.NextLevelExp;
         float NewNextLevelExp = Mathf.Round(CurrentExpRequired + stats.NextLevelExp 

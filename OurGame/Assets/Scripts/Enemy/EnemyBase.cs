@@ -22,6 +22,7 @@ public class EnemyBase : MonoBehaviour
     private bool isKnockedBack = false;
     private bool isDead = false;
     private EnemyLoot enemyLoot;
+    private LevelManager levelManager;
 
     void Start()
     {
@@ -96,6 +97,8 @@ public class EnemyBase : MonoBehaviour
         }
 
         DropExp();
+
+        LevelManager.Instance.IncreaseProgress();
 
         // Destroy enemy after death animation
         Destroy(gameObject, 0.417f);

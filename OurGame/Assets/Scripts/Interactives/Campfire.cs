@@ -33,6 +33,19 @@ public class Campfire : MonoBehaviour
                 hasHealedPlayer = true;
             }
         }
+
+
+        if (isPlayerInRange && Input.GetKeyDown(KeyCode.L)) //Scene transition
+        {
+            if (LevelManager.Instance != null)
+            {
+                LevelManager.Instance.AdvanceToNextLevel();
+            }
+            else
+            {
+                Debug.LogError("LevelManager.Instance is null! Make sure a LevelManager exists in the scene.");
+            }
+        }
     }
 
     void PlayCampfireAnimation()

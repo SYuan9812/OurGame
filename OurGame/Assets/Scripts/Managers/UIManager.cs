@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -25,50 +26,65 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healthTMP;
     [SerializeField] private TextMeshProUGUI expTMP;
 
+    [Header("Level Progress")]
+    [SerializeField] private Image PBar; //Level progress
+    [SerializeField] private TextMeshProUGUI PBarText; //Level progress text
+
+
     private void Awake()
     {
+        HBar = GameObject.Find("HealthBar")?.GetComponent<Image>();
+        EBar = GameObject.Find("ExpBar")?.GetComponent<Image>();
+        SBar = GameObject.Find("Stamina")?.GetComponent<Image>();
 
-        // Auto-find PlayerHealth if not assigned
-        if (playerHealth == null)
-        {
-            playerHealth = FindAnyObjectByType<PlayerHealth>();
-        }
+        levelTMP = GameObject.Find("Level TMP")?.GetComponent<TextMeshProUGUI>();
+        healthTMP = GameObject.Find("HealthText")?.GetComponent<TextMeshProUGUI>();
+        expTMP = GameObject.Find("ExpText")?.GetComponent<TextMeshProUGUI>();
 
-        // Auto-find PlayerExperience if not assigned
-        if (playerExperience == null)
-        {
-            playerExperience = FindAnyObjectByType<PlayerExperience>();
-        }
+        PBar = GameObject.Find("LevelProgress")?.GetComponent<Image>();
+        PBarText = GameObject.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
 
-        if (playerMovement == null)
-        {
-            playerMovement = FindAnyObjectByType<PlayerMovement>();
-        }
+        if (playerHealth == null) playerHealth = FindAnyObjectByType<PlayerHealth>();
+        if (playerExperience == null) playerExperience = FindAnyObjectByType<PlayerExperience>();
+        if (playerMovement == null) playerMovement = FindAnyObjectByType<PlayerMovement>();
 
-        SBar.color = stats.isStaminaLocked ? staminaLockedColor : staminaNormalColor;
+        if (SBar != null)
+            SBar.color = stats.isStaminaLocked ? staminaLockedColor : staminaNormalColor;
     }
 
     private void OnEnable()
     {
-        //Health change for real-time UI update
-        if (playerHealth != null)
-        {
-            playerHealth.OnHealthChanged += UpdateHealthUI;
-        }
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDisable()
     {
-        //Prevent memory leaks
-        if (playerHealth != null)
-        {
-            playerHealth.OnHealthChanged -= UpdateHealthUI;
-        }
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        //Finding objects after scene transition
+        HBar = GameObject.Find("HealthBar")?.GetComponent<Image>();
+        EBar = GameObject.Find("ExpBar")?.GetComponent<Image>();
+        SBar = GameObject.Find("Stamina")?.GetComponent<Image>();
+
+        levelTMP = GameObject.Find("Level TMP")?.GetComponent<TextMeshProUGUI>();
+        healthTMP = GameObject.Find("HealthText")?.GetComponent<TextMeshProUGUI>();
+        expTMP = GameObject.Find("ExpText")?.GetComponent<TextMeshProUGUI>();
+
+        PBar = GameObject.Find("LevelProgress")?.GetComponent<Image>();
+        PBarText = GameObject.Find("LevelText")?.GetComponent<TextMeshProUGUI>();
+
+        if (SBar != null)
+            SBar.color = stats.isStaminaLocked ? staminaLockedColor : staminaNormalColor;
     }
 
     void Start()
     {
-        stats.ResetPlayer();
+
+        stats.ResetPlayer(true); // 只在第一次加载时执行
+
 
         if (playerHealth != null)
         {
@@ -131,10 +147,17 @@ public class UIManager : MonoBehaviour
     }
 
 
-    private void UpdatePlayerGUI ()
+    public void UpdatePlayerGUI ()
     {
         UpdateHealthUI(stats.Health);
         UpdateExpLevelUI();
         UpdateStaminaUI();
+        if (LevelManager.Instance != null && PBar != null) //Update level progress bar
+        {
+            PBar.fillAmount = (float)LevelManager.Instance.currentEnemiesKilled / LevelManager.Instance.totalEnemiesToKill;
+
+            if (PBarText != null)
+                PBarText.text = $"{LevelManager.Instance.currentEnemiesKilled} / {LevelManager.Instance.totalEnemiesToKill}";
+        }
     }
 }
