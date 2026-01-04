@@ -25,6 +25,13 @@ public class Parameter
     public LayerMask targetLayer;
     public Transform attackPoint;
     public Animator anim;
+
+
+    public float rangeWarningDuration = 1.5f;
+    public float rangeExplodeRadius = 2f;     
+    public float rangeExplodeDamage = 10f;   
+    public GameObject rangeWarningPrefab;
+    public GameObject rangeExplodePrefab; 
 }
 
 public interface BossState

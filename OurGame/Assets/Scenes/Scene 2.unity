@@ -14651,8 +14651,8 @@ MonoBehaviour:
     moveSpeed: 1
     chaseSpeed: 1
     idleTime: 2
-    chaseDuration: 5
-    wanderDuration: 3
+    chaseDuration: 2
+    wanderDuration: 2
     attackArea: 1.32
     meleeCooldown: 2
     meleeDamage: 6
@@ -14662,6 +14662,11 @@ MonoBehaviour:
       m_Bits: 128
     attackPoint: {fileID: 956455811}
     anim: {fileID: 985110052}
+    rangeWarningDuration: 1.5
+    rangeExplodeRadius: 2
+    rangeExplodeDamage: 4
+    rangeWarningPrefab: {fileID: 8273053612276961071, guid: f28188f5797eb1742aa1cea5849033b0, type: 3}
+    rangeExplodePrefab: {fileID: 3898874886024269523, guid: bb252323beb4cad478a3f54d63e53140, type: 3}
 --- !u!1 &1324989352
 GameObject:
   m_ObjectHideFlags: 0

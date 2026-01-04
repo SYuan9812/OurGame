@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class IdleState : BossState
 {
@@ -146,11 +148,14 @@ public class MeleeState : BossState
             return;
         }
 
+        HashSet<IDamageable> damagedTargets = new HashSet<IDamageable>();
+
         foreach (Collider2D target in hitTargets)
         {
             IDamageable damageable = target.GetComponent<IDamageable>();
-            if (damageable != null)
+            if (damageable != null && !damagedTargets.Contains(damageable))
             {
+                damagedTargets.Add(damageable);
                 damageable.TakeDamage(parameter.meleeDamage);
             }
         }
@@ -159,11 +164,15 @@ public class MeleeState : BossState
     public void OnExit() { }
 }
 
+
+
+
 public class RangeState : BossState
 {
     private BossFSM manager;
     private Parameter parameter;
-    private bool hasFired;
+    private Vector3 targetPos;
+    private float stateTimer;
 
     public RangeState(BossFSM manager)
     {
@@ -173,16 +182,54 @@ public class RangeState : BossState
 
     public void OnEnter()
     {
-        hasFired = false;
         manager.GetBossBase().RangedAttack();
+
+        if (parameter.target != null)
+        {
+            targetPos = parameter.target.position;
+        }
+
+        stateTimer = 0f;
+        SpawnWarningCircle();
     }
+
     public void OnUpdate()
     {
-        if (!hasFired && parameter.anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+        stateTimer += Time.deltaTime;
+
+        if (stateTimer >= parameter.rangeWarningDuration + 1f)
         {
-            hasFired = true;
             manager.TransitionState(StateType.Chase);
         }
     }
-    public void OnExit() { }
+
+    private void SpawnWarningCircle()
+    {
+        if (parameter.rangeWarningPrefab == null)
+        {
+            manager.TransitionState(StateType.Chase);
+            return;
+        }
+
+        GameObject warning = UnityEngine.Object.Instantiate(
+            parameter.rangeWarningPrefab,
+            targetPos,
+            Quaternion.identity
+        );
+
+        WarningCircle warningScript = warning.GetComponent<WarningCircle>();
+        if (warningScript != null)
+        {
+            warningScript.explodePrefab = parameter.rangeExplodePrefab;
+            warningScript.warningDuration = parameter.rangeWarningDuration;
+            warningScript.explodeRadius = 1.5f;
+            warningScript.explodeDamage = parameter.rangeExplodeDamage;
+            warningScript.targetLayer = parameter.targetLayer;
+        }
+    }
+
+    public void OnExit()
+    {
+        UnityEngine.Object.Destroy(GameObject.FindGameObjectWithTag("WarningCircle"));
+    }
 }
