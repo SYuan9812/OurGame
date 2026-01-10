@@ -51,6 +51,7 @@ public interface BossState
 
 public class BossFSM : MonoBehaviour
 {
+    public StateType CurrentStateType { get; private set; }
     public Parameter parameter;
     private BossBase bossBase;
 
@@ -101,6 +102,8 @@ public class BossFSM : MonoBehaviour
         currentState?.OnExit();
         currentState = states[type];
         currentState?.OnEnter();
+
+        CurrentStateType = type;
 
         if (type == StateType.Melee)
         {

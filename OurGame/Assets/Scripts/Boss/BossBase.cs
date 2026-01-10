@@ -25,12 +25,12 @@ public class BossBase : MonoBehaviour
     protected int BossIsDeadHash;
 
     [Header("Boss Stats")]
-    [SerializeField] protected int maxHealth = 30;
+    [SerializeField] public int maxHealth = 30;
     [SerializeField] protected int flashTimes = 3;
     [SerializeField] protected float FlashDuration = 0.1f;
     [SerializeField] protected Color hitFlashColor = Color.green;
     [SerializeField] protected float expReward = 100f;
-    protected int currentHealth;
+    public int currentHealth;
 
     protected Vector2 moveDirection;
     protected bool isFlashing;
