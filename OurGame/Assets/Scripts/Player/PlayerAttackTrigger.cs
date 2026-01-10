@@ -6,6 +6,7 @@ public class PlayerAttackTrigger : MonoBehaviour
 {
     public int damage = 10;
     private HashSet<EnemyBase> damagedEnemies = new HashSet<EnemyBase>(); //Tracking enemies that are damaged
+    private HashSet<BossBase> damagedBosses = new HashSet<BossBase>();
     // Reference to player transform for knockback direction calculation
     private Transform playerTransform;
 
@@ -20,6 +21,7 @@ public class PlayerAttackTrigger : MonoBehaviour
         if (collision == null) return;
 
         EnemyBase enemyBase = collision.transform.GetComponentInParent<EnemyBase>();
+        BossBase bossBase = collision.transform.GetComponentInParent<BossBase>();
 
         if (enemyBase != null && !damagedEnemies.Contains(enemyBase))
         {
@@ -27,6 +29,12 @@ public class PlayerAttackTrigger : MonoBehaviour
             Vector2 knockbackDirection = CalculateKnockbackDirection(enemyBase.transform);
             enemyBase.EnemyTakeDamage(damage, knockbackDirection);
             damagedEnemies.Add(enemyBase); //Add enemy to damaged
+        }
+
+        if (bossBase != null && !damagedBosses.Contains(bossBase))
+        {
+            bossBase.BossTakeDamage(damage);
+            damagedBosses.Add(bossBase);
         }
     }
 

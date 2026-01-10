@@ -85,15 +85,29 @@ public class WanderState : BossState
     {
         wanderTimer = 0;
         wanderDir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
+        manager.GetBossBase().SetMoveSpeed(parameter.wanderSpeed);
         manager.GetBossBase().SetMoveDirection(wanderDir);
     }
     public void OnUpdate()
     {
         wanderTimer += Time.deltaTime;
         if (wanderTimer >= parameter.wanderDuration)
-            manager.TransitionState(StateType.Range);
+        {
+            if (Random.value < parameter.wanderToRangeChance)
+            {
+                manager.TransitionState(StateType.Range);
+            }
+            else
+            {
+                manager.TransitionState(StateType.Charge);
+            }
+        }
+            
     }
-    public void OnExit() { }
+    public void OnExit()
+    {
+        manager.GetBossBase().SetMoveSpeed(parameter.chaseSpeed);
+    }
 }
 
 public class MeleeState : BossState
@@ -231,5 +245,78 @@ public class RangeState : BossState
     public void OnExit()
     {
         UnityEngine.Object.Destroy(GameObject.FindGameObjectWithTag("WarningCircle"));
+    }
+}
+
+
+
+
+public class ChargeState : BossState
+{
+    private BossFSM manager;
+    private Parameter parameter;
+    private Vector2 chargeDirection;
+    private bool isCharging;
+
+    public ChargeState(BossFSM manager)
+    {
+        this.manager = manager;
+        this.parameter = manager.parameter;
+    }
+
+    public void OnEnter()
+    {
+        isCharging = false;
+
+
+        if (parameter.target != null)
+        {
+            chargeDirection = (parameter.target.position - manager.transform.position).normalized;
+        }
+        else
+        {
+            chargeDirection = Vector2.right;
+        }
+
+        manager.GetBossBase().SetMoveDirection(Vector2.zero);
+
+
+        manager.StartCoroutine(CopyColliderAfterFrame());
+    }
+
+    private IEnumerator CopyColliderAfterFrame()
+    {
+        yield return null;
+
+        PolygonCollider2D bossCollider = manager.GetComponent<PolygonCollider2D>();
+        Hitbox hitbox = manager.GetComponentInChildren<Hitbox>();
+
+        if (bossCollider != null && hitbox != null)
+        {
+            hitbox.ResetDamageFlag();
+            hitbox.CopyColliderFromBoss(bossCollider);
+            hitbox.chargeDamage = parameter.chargeDamage;
+        }
+    }
+
+    public void OnUpdate()
+    {
+        if (!isCharging)
+        {
+            isCharging = true;
+            manager.GetBossBase().SetMoveSpeed(parameter.chargeSpeed);
+            manager.GetBossBase().SetMoveDirection(chargeDirection);
+        }
+
+        if (manager.GetBossBase().IsAtBoundary())
+        {
+            manager.GetBossBase().SetMoveSpeed(0);
+            manager.TransitionState(StateType.Chase);
+        }
+    }
+
+    public void OnExit()
+    {
+        manager.GetBossBase().SetMoveSpeed(parameter.chaseSpeed);
     }
 }

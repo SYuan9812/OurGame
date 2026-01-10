@@ -4,13 +4,12 @@ using UnityEngine;
 
 public enum StateType
 {
-    Idle, Chase, Wander, Melee, Range
+    Idle, Chase, Wander, Melee, Range, Charge
 }
 
 [Serializable]
 public class Parameter
 {
-    public int health;
     public float moveSpeed;
     public float chaseSpeed;
     public float idleTime;
@@ -25,6 +24,15 @@ public class Parameter
     public LayerMask targetLayer;
     public Transform attackPoint;
     public Animator anim;
+
+
+    public float wanderSpeed = 1.5f;
+
+
+    public float chargeDamage = 10f;
+    public float chargeSpeed = 10f;
+    [Range(0f, 1f)]
+    public float wanderToRangeChance = 0.1f;
 
 
     public float rangeWarningDuration = 1.5f;
@@ -49,6 +57,8 @@ public class BossFSM : MonoBehaviour
     private BossState currentState;
     private Dictionary<StateType, BossState> states = new Dictionary<StateType, BossState>();
 
+    private bool isFsmStopped = false;
+
     private float lastMeleeTime;
     void Start()
     {
@@ -62,17 +72,32 @@ public class BossFSM : MonoBehaviour
         states.Add(StateType.Wander, new WanderState(this));
         states.Add(StateType.Melee, new MeleeState(this));
         states.Add(StateType.Range, new RangeState(this));
+        states.Add(StateType.Charge, new ChargeState(this));
 
         TransitionState(StateType.Idle);
     }
 
     void Update()
     {
+        if (isFsmStopped || bossBase.IsDead())
+        {
+            if (!isFsmStopped)
+            {
+                StopFSM();
+            }
+            return;
+        }
+
         currentState?.OnUpdate();
     }
 
     public void TransitionState(StateType type)
     {
+        if (isFsmStopped || bossBase.IsDead())
+        {
+            return;
+        }
+
         currentState?.OnExit();
         currentState = states[type];
         currentState?.OnEnter();
@@ -81,6 +106,15 @@ public class BossFSM : MonoBehaviour
         {
             lastMeleeTime = Time.time;
         }
+    }
+
+    private void StopFSM()
+    {
+        isFsmStopped = true;
+        currentState?.OnExit();
+        currentState = null;
+        bossBase.SetMoveDirection(Vector2.zero);
+        bossBase.SetMoveSpeed(0);
     }
 
 
