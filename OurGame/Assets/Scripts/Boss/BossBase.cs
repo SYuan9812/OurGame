@@ -119,6 +119,11 @@ public class BossBase : MonoBehaviour
         }
 
         GivePlayerExp();
+
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.OnBossKilled();
+        }
     }
 
     private void GivePlayerExp()

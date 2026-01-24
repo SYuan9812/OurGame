@@ -19,7 +19,7 @@ MonoBehaviour:
   attackRangePrefab: {fileID: 0}
   weaponAnimatorOverride: {fileID: 0}
   attackTriggerName: FlashlightAttack
-  weaponModelPrefab: {fileID: 0}
+  weaponModelPrefab: {fileID: 294521555258493700, guid: 80156edaa7d0b68438fa966538395d50, type: 3}
   weaponHoldPoint: {fileID: 0}
   lightBallPrefab: {fileID: 8938324613477141299, guid: 75edbc6875c2d834d99f0c4b94138f0e, type: 3}
   lightBallSpeed: 5

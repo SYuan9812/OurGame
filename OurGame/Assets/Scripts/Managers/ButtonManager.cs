@@ -82,7 +82,7 @@ public class TitleButtonManager : MonoBehaviour
     private void OnNewGameClicked()
     {
 
-        SceneManager.LoadScene("Scene 1");
+        SceneManager.LoadScene("Start Transition");
     }
 
     private void OnLoadGameClicked()

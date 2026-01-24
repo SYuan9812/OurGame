@@ -29,6 +29,9 @@ public class PlayerWeaponManager : MonoBehaviour
     public KeyCode[] weaponSwitchKeys = { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3 };
     public Text currentWeaponUIText;
 
+    [Header("Initial Weapon")]
+    public WeaponData initialBrickWeapon;
+
     private WeaponData currentWeapon;
     private int currentWeaponIndex;
     private float lastAttackTime;
@@ -47,6 +50,23 @@ public class PlayerWeaponManager : MonoBehaviour
 
     private void InitWeaponSystem()
     {
+        if (WeaponDataPersistence.Instance != null)
+        {
+            if (WeaponDataPersistence.Instance.persistentWeaponList.Count == 0)
+            {
+                WeaponDataPersistence.Instance.InitPersistentList(initialBrickWeapon);
+                weaponList = new List<WeaponData>(WeaponDataPersistence.Instance.persistentWeaponList);
+            }
+            else
+            {
+                weaponList = new List<WeaponData>(WeaponDataPersistence.Instance.persistentWeaponList);
+            }
+        }
+        else
+        {
+            FilterInitialWeaponList();
+        }
+
         if (weaponList.Count == 0)
         {
             enabled = false;
@@ -57,6 +77,32 @@ public class PlayerWeaponManager : MonoBehaviour
         EquipWeapon(defaultWeaponIndex);
         ControlWeaponVisibility();
         lastAttackTime = -currentWeapon.attackCooldown;
+        UpdateWeaponUI();
+    }
+
+    private void FilterInitialWeaponList()
+    {
+        List<WeaponData> initialWeapons = new List<WeaponData>();
+        foreach (var weapon in weaponList)
+        {
+            if (weapon != null && weapon.weaponName.Contains("Brick"))
+            {
+                initialWeapons.Add(weapon);
+                break;
+            }
+        }
+
+        weaponList = initialWeapons;
+    }
+
+    public void AddNewWeapon(WeaponData newWeapon)
+    {
+        if (newWeapon == null || weaponList.Contains(newWeapon)) return;
+        weaponList.Add(newWeapon);
+        if (WeaponDataPersistence.Instance != null)
+        {
+            WeaponDataPersistence.Instance.AddWeaponToPersistentList(newWeapon);
+        }
         UpdateWeaponUI();
     }
 

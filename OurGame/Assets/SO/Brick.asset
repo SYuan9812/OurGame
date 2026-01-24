@@ -19,5 +19,8 @@ MonoBehaviour:
   attackRangePrefab: {fileID: 2706295446566435501, guid: 8b04980bd330a2a4bb3259131226ea34, type: 3}
   weaponAnimatorOverride: {fileID: 0}
   attackTriggerName: Attack1
-  weaponModelPrefab: {fileID: 0}
+  weaponModelPrefab: {fileID: 292778907462109587, guid: ff0c5fddf3e5c4048b3912b09aeea7c5, type: 3}
   weaponHoldPoint: {fileID: 0}
+  lightBallPrefab: {fileID: 0}
+  lightBallSpeed: 5
+  lightBallLifetime: 2
