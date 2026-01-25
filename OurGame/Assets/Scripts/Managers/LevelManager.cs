@@ -30,8 +30,6 @@ public class LevelManager : MonoBehaviour
     private int endAnimationTriggerHash;
     private bool isPlayingEndAnimation = false;
 
-    private bool isBossKilled = false;
-
     private void Awake()
     {
         if (Instance == null)
@@ -73,7 +71,6 @@ public class LevelManager : MonoBehaviour
     {
         if (currentLevelType != LevelType.BossFight && currentLevelType != LevelType.FinalLevel) return;
 
-        isBossKilled = true;
         canAdvanceToNextLevel = true;
         if (currentLevelType == LevelType.FinalLevel)
         {
@@ -160,7 +157,6 @@ public class LevelManager : MonoBehaviour
     {
         currentEnemiesKilled = 0;
         canAdvanceToNextLevel = false;
-        isBossKilled = false;
 
         LoadPlayerData();
 
