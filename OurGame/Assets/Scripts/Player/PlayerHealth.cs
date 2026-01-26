@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
@@ -18,6 +19,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private Color healColor = Color.green;
     [SerializeField] private float healFlashTime = 0.2f;
 
+    [Header("Death Settings")]
+    [SerializeField] private string titleSceneName = "Title Scene";
+    [SerializeField] private float deathDelay = 1.5f;
+    [SerializeField] private bool disableInputOnDeath = true;
+
     private Color originalColor; 
     private PlayerAnimations playerAnimations;
     public bool isDead = false;  
@@ -27,6 +33,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public System.Action OnPlayerDead;
 
     private bool isInitialized = false;
+    private bool hasInitiatedDeath = false;
 
     private void Awake()
     {
@@ -78,13 +85,38 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void PlayerDead()
     {
-        if (isDead) return;
-        isDead = true;  //
+        if (isDead || hasInitiatedDeath) return;
+
+        hasInitiatedDeath = true;
+        isDead = true;
+
+        if (disableInputOnDeath)
+        {
+            PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.enabled = false;
+            }
+        }
+
         playerAnimations.SetDeadAnimation();
         OnPlayerDead?.Invoke();
+
+        StartCoroutine(LoadTitleSceneAfterDelay());
     }
 
-    //
+    private IEnumerator LoadTitleSceneAfterDelay()
+    {
+        yield return new WaitForSeconds(deathDelay);
+
+        if (string.IsNullOrEmpty(titleSceneName))
+        {
+            yield break;
+        }
+
+        SceneManager.LoadScene(titleSceneName);
+    }
+
     public void Heal(float healAmount)
     {
         if (isDead || !isInitialized) return;

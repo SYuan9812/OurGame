@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
+using UnityEngine.SceneManagement;
 
 public class Cursor : MonoBehaviour
 {
@@ -21,14 +23,26 @@ public class Cursor : MonoBehaviour
     public float exitYMin = -123;
     public float exitYMax = -23;
 
+    [Header("Video Scene Fix")]
+    public string titleSceneName = "Title Scene";
+    public Canvas uiCanvas;
+
     private GamePauseManager pauseManager;
     private Color settingOriginalColor;
     private Color exitOriginalColor;
     private Image settingImg;
     private Image exitImg;
+    private bool isTitleScene;
 
-    void Start()
+    IEnumerator Start()
     {
+        yield return new WaitForSeconds(0.1f);
+
+        UnityEngine.Cursor.visible = true;
+        UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+
+        isTitleScene = SceneManager.GetActiveScene().name == titleSceneName;
+
         pauseManager = FindObjectOfType<GamePauseManager>();
 
         if (settingButtonObj != null)
@@ -41,8 +55,6 @@ public class Cursor : MonoBehaviour
             exitImg = exitButtonObj.GetComponent<Image>();
             if (exitImg != null) exitOriginalColor = exitImg.color;
         }
-
-        UnityEngine.Cursor.visible = false;
     }
 
     void Update()

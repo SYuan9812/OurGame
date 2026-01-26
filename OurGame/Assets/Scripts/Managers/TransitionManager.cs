@@ -9,6 +9,11 @@ public class TransitionManager : MonoBehaviour
     [Tooltip("Transition Key")]
     public KeyCode triggerKey = KeyCode.Space;
 
+    [Header("Scene Names")]
+    public string endSceneName = "End Scene";
+    public string titleSceneName = "Title Scene";
+    public string defaultSceneName = "Scene 1";
+
     private bool isTransitioning = false;
 
     void Update()
@@ -27,6 +32,17 @@ public class TransitionManager : MonoBehaviour
 
     private void LoadTargetScene()
     {
-        SceneManager.LoadScene("Scene 1");
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        if (currentSceneName == endSceneName)
+        {
+            SceneManager.LoadScene(titleSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(defaultSceneName);
+        }
+
+        isTransitioning = false;
     }
 }

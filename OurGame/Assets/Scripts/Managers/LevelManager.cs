@@ -63,7 +63,6 @@ public class LevelManager : MonoBehaviour
         if (currentEnemiesKilled == totalEnemiesToKill)
         {
             canAdvanceToNextLevel = true;
-            Debug.Log("Level complete! Press L at campfire to advance.");
         }
     }
 
@@ -72,14 +71,6 @@ public class LevelManager : MonoBehaviour
         if (currentLevelType != LevelType.BossFight && currentLevelType != LevelType.FinalLevel) return;
 
         canAdvanceToNextLevel = true;
-        if (currentLevelType == LevelType.FinalLevel)
-        {
-            Debug.Log("Final Boss defeated! Press L to enter portal.");
-        }
-        else
-        {
-            Debug.Log("Boss defeated! Press L at campfire to advance.");
-        }
 
         if (progressBar != null) progressBar.gameObject.SetActive(false);
     }
@@ -138,7 +129,6 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Player Animator not found! Loading scene directly.");
             yield return new WaitForSeconds(sceneLoadDelay);
         }
 

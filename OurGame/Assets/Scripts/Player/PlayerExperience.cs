@@ -21,15 +21,6 @@ public class PlayerExperience : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            AddExp(50f);
-        }
-    }
-
-
     public void AddExp(float amount)
     {
         stats.CurrentExp += amount;

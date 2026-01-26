@@ -18,7 +18,6 @@ public class NPCDialogueManager : MonoBehaviour
 
     private int currentLineIndex = 0;
     private bool isDialogueActive = false;
-    private bool isWaitingForInput = true;
     private Coroutine typeWriterCoroutine;
 
     private void Awake()
@@ -43,7 +42,7 @@ public class NPCDialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (isDialogueActive && isWaitingForInput && Input.GetKeyDown(nextDialogueKey))
+        if (isDialogueActive && Input.GetKeyDown(nextDialogueKey))
         {
             ShowNextDialogueLine();
         }
@@ -55,14 +54,17 @@ public class NPCDialogueManager : MonoBehaviour
 
         currentLineIndex = 0;
         isDialogueActive = true;
-        isWaitingForInput = true;
 
         PlayTypeWriterForCurrentLine();
     }
 
     private void ShowNextDialogueLine()
     {
-        if (typeWriterCoroutine != null) StopCoroutine(typeWriterCoroutine);
+        if (typeWriterCoroutine != null)
+        {
+            StopCoroutine(typeWriterCoroutine);
+            typeWriterCoroutine = null;
+        }
 
         currentLineIndex++;
 
@@ -84,13 +86,11 @@ public class NPCDialogueManager : MonoBehaviour
 
     private IEnumerator TypeWriterEffect(string textToShow)
     {
-        isWaitingForInput = false;
         dialogueText.text = "";
         foreach (char c in textToShow.ToCharArray())
         {
             dialogueText.text += c;
             yield return new WaitForSeconds(typeWriterDelay);
         }
-        isWaitingForInput = true;
     }
 }

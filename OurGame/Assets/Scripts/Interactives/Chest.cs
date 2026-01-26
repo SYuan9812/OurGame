@@ -71,7 +71,6 @@ public class Chest : MonoBehaviour
         isChestOpened = true;
 
         chestAnimator.SetTrigger(openTriggerName);
-        Debug.Log("Chest Opened");
 
         RandomGenerateRewardWeapon();
         if (awardObject != null) awardObject.SetActive(true);
