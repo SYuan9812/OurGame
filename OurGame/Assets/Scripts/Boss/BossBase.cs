@@ -9,7 +9,10 @@ public class BossBase : MonoBehaviour
     [SerializeField] protected Rigidbody2D rb;
 
     [Header("Motion")]
-    [SerializeField] protected float moveSpeed = 10f;
+    [SerializeField] protected float baseMoveSpeed = 5f;
+    [SerializeField] protected float chaseSpeedMultiplier = 1.5f;
+    [SerializeField] protected float wanderSpeedMultiplier = 0.8f;
+    [SerializeField] protected float chargeSpeedMultiplier = 3f;
 
     [Header("Boundary")]
     [SerializeField] protected float minX;
@@ -35,6 +38,7 @@ public class BossBase : MonoBehaviour
     protected Vector2 moveDirection;
     protected bool isFlashing;
     private bool hasInitiatedDeath = false;
+    private float currentMoveSpeed;
 
     protected virtual void Awake()
     {
@@ -48,6 +52,7 @@ public class BossBase : MonoBehaviour
             rb = GetComponent<Rigidbody2D>();
 
         currentHealth = maxHealth;
+        currentMoveSpeed = baseMoveSpeed;
     }
 
     protected virtual void Update()
@@ -73,7 +78,7 @@ public class BossBase : MonoBehaviour
     {
         if (moveDirection == Vector2.zero) return;
 
-        Vector2 newPos = rb.position + moveDirection * moveSpeed * Time.deltaTime;
+        Vector2 newPos = rb.position + moveDirection * currentMoveSpeed * Time.deltaTime;
         rb.MovePosition(newPos);
     }
 
@@ -149,12 +154,34 @@ public class BossBase : MonoBehaviour
 
     public Vector2 GetMoveDirection() => moveDirection;
 
-
-    public virtual void SetMoveSpeed(float speed)
+    public void SetMoveSpeedByState(StateType stateType)
     {
-        moveSpeed = speed;
+        switch (stateType)
+        {
+            case StateType.Idle:
+            case StateType.Chase:
+                currentMoveSpeed = baseMoveSpeed * chaseSpeedMultiplier;
+                break;
+            case StateType.Wander:
+                currentMoveSpeed = baseMoveSpeed * wanderSpeedMultiplier;
+                break;
+            case StateType.Charge:
+                currentMoveSpeed = baseMoveSpeed * chargeSpeedMultiplier;
+                break;
+            case StateType.Melee:
+            case StateType.Range:
+                currentMoveSpeed = 0;
+                break;
+            default:
+                currentMoveSpeed = baseMoveSpeed;
+                break;
+        }
     }
 
+    public void SetMoveSpeed(float speed)
+    {
+        currentMoveSpeed = speed;
+    }
 
     public void BossTakeDamage(int damage)
     {

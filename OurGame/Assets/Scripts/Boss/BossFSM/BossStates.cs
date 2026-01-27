@@ -48,10 +48,7 @@ public class ChaseState : BossState
 
         Vector2 dirToPlayer = (parameter.target.position - parameter.attackPoint.position).normalized;
         manager.GetBossBase().SetMoveDirection(dirToPlayer);
-
-
         manager.FlipTo(parameter.target);
-
 
         if (Physics2D.OverlapCircle(parameter.attackPoint.position, parameter.attackArea, parameter.targetLayer) &&
             !manager.IsMeleeCoolingDown())
@@ -84,30 +81,20 @@ public class WanderState : BossState
     public void OnEnter()
     {
         wanderTimer = 0;
-        wanderDir = new Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)).normalized;
-        manager.GetBossBase().SetMoveSpeed(parameter.wanderSpeed);
+        wanderDir = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
         manager.GetBossBase().SetMoveDirection(wanderDir);
     }
+
     public void OnUpdate()
     {
         wanderTimer += Time.deltaTime;
         if (wanderTimer >= parameter.wanderDuration)
         {
-            if (Random.value < parameter.wanderToRangeChance)
-            {
-                manager.TransitionState(StateType.Range);
-            }
-            else
-            {
-                manager.TransitionState(StateType.Charge);
-            }
+            manager.TransitionState(Random.value < parameter.wanderToRangeChance ? StateType.Range : StateType.Charge);
         }
-            
     }
-    public void OnExit()
-    {
-        manager.GetBossBase().SetMoveSpeed(parameter.chaseSpeed);
-    }
+
+    public void OnExit() { }
 }
 
 public class MeleeState : BossState
@@ -267,20 +254,11 @@ public class ChargeState : BossState
     public void OnEnter()
     {
         isCharging = false;
-
-
-        if (parameter.target != null)
-        {
-            chargeDirection = (parameter.target.position - manager.transform.position).normalized;
-        }
-        else
-        {
-            chargeDirection = Vector2.right;
-        }
+        chargeDirection = parameter.target != null
+            ? (parameter.target.position - manager.transform.position).normalized
+            : Vector2.right;
 
         manager.GetBossBase().SetMoveDirection(Vector2.zero);
-
-
         manager.StartCoroutine(CopyColliderAfterFrame());
     }
 
@@ -295,7 +273,7 @@ public class ChargeState : BossState
         {
             hitbox.ResetDamageFlag();
             hitbox.CopyColliderFromBoss(bossCollider);
-            hitbox.chargeDamage = parameter.chargeDamage;
+            hitbox.chargeDamage = (int)parameter.chargeDamage;
         }
     }
 
@@ -304,10 +282,8 @@ public class ChargeState : BossState
         if (!isCharging)
         {
             isCharging = true;
-            manager.GetBossBase().SetMoveSpeed(parameter.chargeSpeed);
             manager.GetBossBase().SetMoveDirection(chargeDirection);
         }
-
         if (manager.GetBossBase().IsAtBoundary())
         {
             manager.GetBossBase().SetMoveSpeed(0);
@@ -315,8 +291,5 @@ public class ChargeState : BossState
         }
     }
 
-    public void OnExit()
-    {
-        manager.GetBossBase().SetMoveSpeed(parameter.chaseSpeed);
-    }
+    public void OnExit() { }
 }

@@ -10,8 +10,6 @@ public enum StateType
 [Serializable]
 public class Parameter
 {
-    public float moveSpeed;
-    public float chaseSpeed;
     public float idleTime;
     public float chaseDuration;
     public float wanderDuration;
@@ -25,12 +23,7 @@ public class Parameter
     public Transform attackPoint;
     public Animator anim;
 
-
-    public float wanderSpeed = 1.5f;
-
-
     public float chargeDamage = 10f;
-    public float chargeSpeed = 10f;
     [Range(0f, 1f)]
     public float wanderToRangeChance = 0.1f;
 
@@ -101,6 +94,7 @@ public class BossFSM : MonoBehaviour
 
         currentState?.OnExit();
         currentState = states[type];
+        bossBase.SetMoveSpeedByState(type);
         currentState?.OnEnter();
 
         CurrentStateType = type;
